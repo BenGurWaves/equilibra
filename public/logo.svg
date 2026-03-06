@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 120" height="120">
+  <!-- Two interlocking arcs forming a balanced infinity/resilience cycle -->
+  <g transform="translate(150, 40)">
+    <path d="M-40,0 C-40,-22 -22,-22 0,-2 C22,-22 40,-22 40,0 C40,22 22,22 0,2 C-22,22 -40,22 -40,0Z"
+          fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+  </g>
+  <!-- EQUILIBRA text -->
+  <text x="150" y="95" text-anchor="middle" fill="white"
+        font-family="var(--font-space-grotesk), 'Space Grotesk', sans-serif"
+        font-weight="700" font-size="22" letter-spacing="8">EQUILIBRA</text>
+</svg>
