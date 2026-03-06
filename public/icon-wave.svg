@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" fill="none">
+  <!-- Minimal wave — calm/breath/flow -->
+  <g stroke="white" stroke-width="1" stroke-linecap="round" opacity="0.7">
+    <path d="M6 20C10 16 14 16 18 20C22 24 26 24 30 20C34 16 38 16 42 20"/>
+    <path d="M6 28C10 24 14 24 18 28C22 32 26 32 30 28C34 24 38 24 42 28" opacity="0.4"/>
+    <path d="M6 36C10 32 14 32 18 36C22 40 26 40 30 36C34 32 38 32 42 36" opacity="0.2"/>
+  </g>
+</svg>

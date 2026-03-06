@@ -1,18 +1,16 @@
-// Supabase client - configure with your project keys
-// Uncomment and configure once you have your Supabase project set up
+import { createClient } from "@supabase/supabase-js";
 
-// import { createClient } from "@supabase/supabase-js";
+const supabaseUrl =
+  process.env.NEXT_PUBLIC_SUPABASE_URL ||
+  "https://dicrlmsuuubnrwsgwigi.supabase.co";
+const supabaseAnonKey =
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+  "sb_publishable_4koy0SgkwNSUAe_iHV5oXg_SDwA7SnQ";
 
-// const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-// const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-
-// export const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
-// Placeholder export until Supabase is configured
-export const supabase = null;
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 /*
-SQL to create tables in Supabase:
+Run this SQL in the Supabase SQL Editor to create your tables:
 
 CREATE TABLE user_progress (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -35,11 +33,9 @@ CREATE TABLE community_posts (
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
--- Enable Row Level Security
 ALTER TABLE user_progress ENABLE ROW LEVEL SECURITY;
 ALTER TABLE community_posts ENABLE ROW LEVEL SECURITY;
 
--- Policies (adjust based on your auth setup)
 CREATE POLICY "Users can read own progress" ON user_progress FOR SELECT USING (true);
 CREATE POLICY "Users can insert own progress" ON user_progress FOR INSERT WITH CHECK (true);
 CREATE POLICY "Users can update own progress" ON user_progress FOR UPDATE USING (true);

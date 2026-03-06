@@ -1,13 +1,8 @@
 "use client";
 
 import Image from "next/image";
+import { SignUpButton, Show } from "@clerk/nextjs";
 import Link from "next/link";
-
-const proofCards = [
-  { icon: "🧠", text: "Evidence-based practices" },
-  { icon: "⚡", text: "5–10 minutes per day" },
-  { icon: "🔒", text: "Private & secure" },
-];
 
 export default function Hero() {
   return (
@@ -17,10 +12,9 @@ export default function Hero() {
         <Image
           src="/logo.svg"
           alt="Equilibra"
-          width={240}
-          height={96}
+          width={280}
+          height={112}
           priority
-          className="invert-0"
         />
       </div>
 
@@ -29,30 +23,42 @@ export default function Hero() {
         Build unbreakable calm in a chaotic world
       </p>
 
-      {/* CTA */}
-      <Link
-        href="/sign-up"
-        className="group relative inline-flex items-center justify-center px-10 py-4 text-sm font-heading font-bold uppercase tracking-[0.2em] text-black bg-white rounded-none transition-all duration-300 hover:bg-white/90 hover:tracking-[0.25em]"
-      >
-        Start Free 7-Day Reset
-      </Link>
+      {/* CTA — changes based on auth state */}
+      <Show when="signed-out">
+        <SignUpButton mode="modal">
+          <button className="group relative inline-flex items-center justify-center px-10 py-4 text-sm font-heading font-bold uppercase tracking-[0.2em] text-black bg-white rounded-none transition-all duration-300 hover:bg-white/90 hover:tracking-[0.25em]">
+            Start Free 7-Day Reset
+          </button>
+        </SignUpButton>
+      </Show>
+      <Show when="signed-in">
+        <Link
+          href="/dashboard"
+          className="group relative inline-flex items-center justify-center px-10 py-4 text-sm font-heading font-bold uppercase tracking-[0.2em] text-black bg-white rounded-none transition-all duration-300 hover:bg-white/90 hover:tracking-[0.25em]"
+        >
+          Go to Mental Lab
+        </Link>
+      </Show>
 
       {/* Proof cards */}
       <div className="mt-20 flex flex-col sm:flex-row gap-6 sm:gap-12 items-center">
-        {proofCards.map((card) => (
-          <div
-            key={card.text}
-            className="flex items-center gap-3 text-white/40 text-sm font-body"
-          >
-            <span className="text-lg">{card.icon}</span>
-            <span>{card.text}</span>
-          </div>
-        ))}
+        <div className="flex items-center gap-3 text-white/40 text-sm font-body">
+          <Image src="/icon-brain.svg" alt="" width={20} height={20} className="opacity-40" />
+          <span>Evidence-based practices</span>
+        </div>
+        <div className="flex items-center gap-3 text-white/40 text-sm font-body">
+          <Image src="/icon-streak.svg" alt="" width={20} height={20} className="opacity-40" />
+          <span>5-10 minutes per day</span>
+        </div>
+        <div className="flex items-center gap-3 text-white/40 text-sm font-body">
+          <Image src="/icon-shield.svg" alt="" width={20} height={20} className="opacity-40" />
+          <span>Private &amp; secure</span>
+        </div>
       </div>
 
       {/* Social proof */}
       <p className="mt-8 text-white/20 text-xs font-body tracking-widest uppercase">
-        Join 247 others building resilience today
+        Join others building resilience today
       </p>
 
       {/* Scroll indicator */}

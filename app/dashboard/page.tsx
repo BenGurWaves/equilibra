@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useUser } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
 import DailyPracticeCard from "@/components/DailyPracticeCard";
@@ -10,23 +11,72 @@ import { practices } from "@/lib/practices";
 type Tab = "home" | "practices" | "community" | "progress";
 
 export default function Dashboard() {
+  const { user, isLoaded } = useUser();
   const [activeTab, setActiveTab] = useState<Tab>("home");
   const [completedDays, setCompletedDays] = useState<Set<number>>(new Set());
+  const [loading, setLoading] = useState(true);
+
+  const fetchProgress = useCallback(async () => {
+    try {
+      const res = await fetch("/api/progress");
+      if (res.ok) {
+        const data = await res.json();
+        const days = new Set<number>(
+          data
+            .filter((p: { completed: boolean }) => p.completed)
+            .map((p: { day: number }) => p.day)
+        );
+        setCompletedDays(days);
+      }
+    } catch {
+      // Supabase tables may not exist yet — use local state
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isLoaded && user) {
+      fetchProgress();
+    } else if (isLoaded) {
+      setLoading(false);
+    }
+  }, [isLoaded, user, fetchProgress]);
 
   const currentDay = completedDays.size + 1;
   const streakCount = completedDays.size;
   const resilienceScore = Math.round((completedDays.size / 7) * 100);
 
-  const handleComplete = (day: number, _reflection: string) => {
+  const handleComplete = async (day: number, reflection: string) => {
     setCompletedDays((prev) => new Set(prev).add(day));
+
+    try {
+      await fetch("/api/progress", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ day, reflection }),
+      });
+    } catch {
+      // Save locally even if API fails
+    }
   };
 
-  const tabs: { key: Tab; label: string }[] = [
-    { key: "home", label: "Home" },
-    { key: "practices", label: "Practices" },
-    { key: "community", label: "Community" },
-    { key: "progress", label: "Progress" },
+  const tabs: { key: Tab; label: string; icon: string }[] = [
+    { key: "home", label: "Home", icon: "/icon-wave.svg" },
+    { key: "practices", label: "Practices", icon: "/icon-brain.svg" },
+    { key: "community", label: "Community", icon: "/icon-connection.svg" },
+    { key: "progress", label: "Progress", icon: "/icon-streak.svg" },
   ];
+
+  if (!isLoaded || loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-white/20 text-sm font-body animate-pulse">
+          Loading your Mental Lab...
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex">
@@ -36,17 +86,24 @@ export default function Dashboard() {
           <Image src="/logo.svg" alt="Equilibra" width={140} height={56} />
         </Link>
 
-        <nav className="space-y-2 flex-1">
+        <nav className="space-y-1 flex-1">
           {tabs.map((tab) => (
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`w-full text-left px-4 py-3 text-sm font-body tracking-wide transition-colors ${
+              className={`w-full text-left px-4 py-3 text-sm font-body tracking-wide transition-colors flex items-center gap-3 ${
                 activeTab === tab.key
                   ? "text-white bg-white/[0.05]"
                   : "text-white/30 hover:text-white/60"
               }`}
             >
+              <Image
+                src={tab.icon}
+                alt=""
+                width={16}
+                height={16}
+                className={activeTab === tab.key ? "opacity-60" : "opacity-20"}
+              />
               {tab.label}
             </button>
           ))}
@@ -54,12 +111,11 @@ export default function Dashboard() {
 
         <div className="border-t border-white/5 pt-6 mt-6">
           <p className="text-white/20 text-xs font-body">Free Tier</p>
-          <Link
-            href="#"
-            className="text-white/40 text-xs font-body hover:text-white/60 transition-colors mt-1 block"
-          >
-            Upgrade to Full Access →
-          </Link>
+          {user && (
+            <p className="text-white/10 text-xs font-body mt-1 truncate">
+              {user.primaryEmailAddress?.emailAddress}
+            </p>
+          )}
         </div>
       </aside>
 
@@ -69,10 +125,17 @@ export default function Dashboard() {
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
-            className={`flex-1 py-4 text-xs font-body tracking-wide transition-colors ${
+            className={`flex-1 py-4 text-xs font-body tracking-wide transition-colors flex flex-col items-center gap-1 ${
               activeTab === tab.key ? "text-white" : "text-white/30"
             }`}
           >
+            <Image
+              src={tab.icon}
+              alt=""
+              width={14}
+              height={14}
+              className={activeTab === tab.key ? "opacity-60" : "opacity-20"}
+            />
             {tab.label}
           </button>
         ))}
@@ -84,7 +147,7 @@ export default function Dashboard() {
         {activeTab === "home" && (
           <div>
             <h1 className="font-heading text-3xl md:text-4xl font-bold tracking-tight mb-2">
-              Welcome back
+              {user?.firstName ? `Welcome, ${user.firstName}` : "Welcome back"}
             </h1>
             <p className="text-white/40 font-body text-sm mb-12">
               Day {currentDay > 7 ? 7 : currentDay} of your 7-Day Resilience
@@ -94,25 +157,34 @@ export default function Dashboard() {
             {/* Stats row */}
             <div className="grid grid-cols-3 gap-4 mb-12">
               <div className="border border-white/10 p-6">
-                <p className="text-white/20 text-xs font-body uppercase tracking-widest mb-2">
-                  Streak
-                </p>
+                <div className="flex items-center gap-2 mb-2">
+                  <Image src="/icon-streak.svg" alt="" width={14} height={14} className="opacity-30" />
+                  <p className="text-white/20 text-xs font-body uppercase tracking-widest">
+                    Streak
+                  </p>
+                </div>
                 <p className="font-heading text-3xl font-bold">
                   {streakCount}
                 </p>
               </div>
               <div className="border border-white/10 p-6">
-                <p className="text-white/20 text-xs font-body uppercase tracking-widest mb-2">
-                  Resilience
-                </p>
+                <div className="flex items-center gap-2 mb-2">
+                  <Image src="/icon-shield.svg" alt="" width={14} height={14} className="opacity-30" />
+                  <p className="text-white/20 text-xs font-body uppercase tracking-widest">
+                    Resilience
+                  </p>
+                </div>
                 <p className="font-heading text-3xl font-bold">
                   {resilienceScore}%
                 </p>
               </div>
               <div className="border border-white/10 p-6">
-                <p className="text-white/20 text-xs font-body uppercase tracking-widest mb-2">
-                  Days Left
-                </p>
+                <div className="flex items-center gap-2 mb-2">
+                  <Image src="/icon-compass.svg" alt="" width={14} height={14} className="opacity-30" />
+                  <p className="text-white/20 text-xs font-body uppercase tracking-widest">
+                    Days Left
+                  </p>
+                </div>
                 <p className="font-heading text-3xl font-bold">
                   {Math.max(0, 7 - completedDays.size)}
                 </p>
@@ -131,11 +203,18 @@ export default function Dashboard() {
               />
             ) : (
               <div className="border border-white/10 p-8 text-center">
+                <Image
+                  src="/icon-shield.svg"
+                  alt=""
+                  width={32}
+                  height={32}
+                  className="opacity-30 mx-auto mb-4"
+                />
                 <p className="font-heading text-xl font-bold mb-2">
-                  7-Day Reset Complete! 🎉
+                  7-Day Reset Complete
                 </p>
                 <p className="text-white/40 text-sm font-body">
-                  Upgrade to continue your mental fitness journey.
+                  You built the foundation. Full access coming soon.
                 </p>
               </div>
             )}
