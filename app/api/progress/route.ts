@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { supabase } from "@/lib/supabase";
 
+export const runtime = "edge";
+
 export async function GET() {
   const { userId } = await auth();
   if (!userId) {

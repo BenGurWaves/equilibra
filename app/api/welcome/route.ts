@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sendWelcomeEmail } from "@/lib/email";
 
+export const runtime = "edge";
+
 export async function POST(req: NextRequest) {
   try {
     const { email, name } = await req.json();

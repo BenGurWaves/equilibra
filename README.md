@@ -43,12 +43,18 @@ In the Cloudflare Pages build settings:
 | **Build command** | `npx @cloudflare/next-on-pages@1` |
 | **Build output directory** | `.vercel/output/static` |
 
-Add these environment variables in Cloudflare Pages settings:
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-- `RESEND_API_KEY`
-- `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` (optional — keyless mode works without it)
-- `CLERK_SECRET_KEY` (optional — add when you claim your Clerk app)
+**Required environment variables** in Cloudflare Pages → Settings → Environment variables:
+
+| Variable | Value | Required? |
+|----------|-------|-----------|
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Get from [dashboard.clerk.com](https://dashboard.clerk.com) | Yes |
+| `CLERK_SECRET_KEY` | Get from [dashboard.clerk.com](https://dashboard.clerk.com) | Yes |
+| `NEXT_PUBLIC_SUPABASE_URL` | Your Supabase project URL | Yes |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Your Supabase anon key | Yes |
+| `RESEND_API_KEY` | Your Resend API key | Yes |
+| `NODE_VERSION` | `18` | Recommended |
+
+> **Note:** Clerk v6 requires API keys — create a free account at [clerk.com](https://clerk.com) first.
 
 ## Project Structure
 
@@ -67,6 +73,9 @@ equilibra/
 │   └── globals.css          ← Tailwind + grain animation
 ├── components/
 │   ├── Hero.tsx             ← Landing hero with auth-aware CTA
+│   ├── AuthNav.tsx          ← Clerk auth nav (client component)
+│   ├── ClerkWrapper.tsx     ← ClerkProvider wrapper (client component)
+│   ├── DashboardClient.tsx  ← Dashboard UI (client component)
 │   ├── GrainOverlay.tsx     ← Film grain effect
 │   ├── DailyPracticeCard.tsx ← Practice day with complete + reflect
 │   └── CommunityFeed.tsx    ← Today's Wins feed

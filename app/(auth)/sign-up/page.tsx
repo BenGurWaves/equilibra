@@ -1,5 +1,8 @@
 import { SignUp } from "@clerk/nextjs";
 
+export const dynamic = "force-dynamic";
+export const runtime = "edge";
+
 export default function SignUpPage() {
   return (
     <main className="min-h-screen flex items-center justify-center px-6">
