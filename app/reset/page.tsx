@@ -2,6 +2,7 @@ import Link from "next/link";
 import { practices } from "@/lib/practices";
 
 export const dynamic = "force-dynamic";
+export const runtime = "edge";
 
 export default function ResetPage() {
   return (

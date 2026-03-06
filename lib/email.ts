@@ -1,11 +1,29 @@
-import { Resend } from "resend";
+const RESEND_API_KEY =
+  process.env.RESEND_API_KEY || "re_Mc3MGtTE_NoXXi3npTxsoZ1bmi6oDvvEC";
 
-const resend = new Resend(
-  process.env.RESEND_API_KEY || "re_Mc3MGtTE_NoXXi3npTxsoZ1bmi6oDvvEC"
-);
+async function sendEmail(payload: {
+  from: string;
+  to: string;
+  subject: string;
+  html: string;
+}) {
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${RESEND_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    const error = await res.text();
+    console.error("Failed to send email:", error);
+  }
+}
 
 export async function sendWelcomeEmail(email: string, name?: string) {
-  const { error } = await resend.emails.send({
+  await sendEmail({
     from: "Equilibra <onboarding@resend.dev>",
     to: email,
     subject: "Welcome to Equilibra — Your 7-Day Reset Starts Now",
@@ -38,17 +56,13 @@ export async function sendWelcomeEmail(email: string, name?: string) {
       </div>
     `,
   });
-
-  if (error) {
-    console.error("Failed to send welcome email:", error);
-  }
 }
 
 export async function sendTrialReminderEmail(
   email: string,
   daysLeft: number
 ) {
-  const { error } = await resend.emails.send({
+  await sendEmail({
     from: "Equilibra <onboarding@resend.dev>",
     to: email,
     subject: `${daysLeft} days left — keep building resilience`,
@@ -69,8 +83,4 @@ export async function sendTrialReminderEmail(
       </div>
     `,
   });
-
-  if (error) {
-    console.error("Failed to send trial reminder:", error);
-  }
 }
