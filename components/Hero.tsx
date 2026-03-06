@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { SignUpButton, Show } from "@clerk/nextjs";
+import { SignUpButton, SignedIn, SignedOut } from "@clerk/nextjs";
 import Link from "next/link";
 
 export default function Hero() {
@@ -24,21 +24,21 @@ export default function Hero() {
       </p>
 
       {/* CTA — changes based on auth state */}
-      <Show when="signed-out">
+      <SignedOut>
         <SignUpButton mode="modal">
           <button className="group relative inline-flex items-center justify-center px-10 py-4 text-sm font-heading font-bold uppercase tracking-[0.2em] text-black bg-white rounded-none transition-all duration-300 hover:bg-white/90 hover:tracking-[0.25em]">
             Start Free 7-Day Reset
           </button>
         </SignUpButton>
-      </Show>
-      <Show when="signed-in">
+      </SignedOut>
+      <SignedIn>
         <Link
           href="/dashboard"
           className="group relative inline-flex items-center justify-center px-10 py-4 text-sm font-heading font-bold uppercase tracking-[0.2em] text-black bg-white rounded-none transition-all duration-300 hover:bg-white/90 hover:tracking-[0.25em]"
         >
           Go to Mental Lab
         </Link>
-      </Show>
+      </SignedIn>
 
       {/* Proof cards */}
       <div className="mt-20 flex flex-col sm:flex-row gap-6 sm:gap-12 items-center">

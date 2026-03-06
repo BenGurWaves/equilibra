@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { practices } from "@/lib/practices";
 
+export const dynamic = "force-dynamic";
+
 export default function ResetPage() {
   return (
     <main className="min-h-screen px-6 py-16 max-w-3xl mx-auto">
