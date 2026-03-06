@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" fill="none">
+  <!-- Minimal flame — streak/momentum -->
+  <g stroke="white" stroke-width="1" stroke-linecap="round" opacity="0.7">
+    <path d="M24 6C24 6 16 18 16 28C16 34 20 40 24 42C28 40 32 34 32 28C32 18 24 6 24 6Z"/>
+    <path d="M24 18C24 18 20 24 20 30C20 34 22 38 24 38C26 38 28 34 28 30C28 24 24 18 24 18Z" opacity="0.4"/>
+    <!-- Core -->
+    <circle cx="24" cy="30" r="2" fill="white" opacity="0.3"/>
+  </g>
+</svg>
